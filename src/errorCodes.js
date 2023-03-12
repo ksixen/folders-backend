@@ -1,0 +1,24 @@
+module.exports = {
+    'A-01': {
+        err: "Something got wrong! Please, try again!",
+        code: 'A-01'
+    },
+    'A-02': {
+        err: "Missing arguments: {args}",
+        code: 'A-02'
+    },
+
+    
+    'U-01': {
+        err: "Invalid Password",
+        code: 'U-01'
+    },
+    'U-02': {
+        err: "Password or Login doesn't correct",
+        code: 'U-02'
+    },
+    'U-03': {
+        err: "Login is busy",
+        code: 'U-03'
+    },
+}
