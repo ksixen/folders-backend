@@ -12,7 +12,7 @@ const usersRequest = router.get(routes.ADD_FOLDER, (req, res) => {
             "id",
             "order",
         ]);
-        // console.log(req.body, hasRequired)
+
         if (!hasRequired) {
             res.status(400).send({
                 response: "error",

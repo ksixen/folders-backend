@@ -6,6 +6,9 @@ const crypto = require("crypto");
 const scrypt = promisify(crypto.scrypt);
 const router = express.Router();
 const jwt = require("jsonwebtoken");
+const { config } = require("dotenv");
+
+config();
 
 const { SECRET } = process.env;
 
@@ -47,12 +50,13 @@ const registerRequest = router.get(routes.REGISTER, async (req, res) => {
             {
                 login,
             },
-            'aas',
+            SECRET,
             {
                 expiresIn: 864e5,
             }
         );
-        console.log(token)
+        res.cookie('token', token)
+
         res.status(200).send("ok");
     } catch (error) {
         res.status(400).send(`${error}`);
