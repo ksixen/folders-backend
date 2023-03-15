@@ -15,7 +15,6 @@ const authMiddleware = async (req, res, next) => {
 
     try {
         verify(authorization, SECRET);
-
         return next();
     } catch (e) {
         console.log(e)

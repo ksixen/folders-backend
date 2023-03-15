@@ -1,11 +1,10 @@
-const checkRequiredKeys = (req = {}, keys = []) => {
-
-    keys.forEach((key) =>{
-        if (!req[key]) {
-            console.log("Key", key, "Req", req)
+const checkRequiredKeys = async (req, keys = []) => {
+    keys.map(key => {
+        if (req[key] === undefined) {
+            console.log(req, typeof req, key)
             return false
-        };
+        }
     })
     return true;
 };
-module.exports = checkRequiredKeys
+module.exports = checkRequiredKeys;

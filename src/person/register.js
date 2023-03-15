@@ -7,6 +7,7 @@ const scrypt = promisify(crypto.scrypt);
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { config } = require("dotenv");
+const errorCodes = require("../errorCodes");
 
 config();
 
@@ -15,32 +16,35 @@ const { SECRET } = process.env;
 const registerRequest = router.get(routes.REGISTER, async (req, res) => {
     try {
         const request = req.body;
+        const missingArgs = errorCodes["A-02"]
         if (!("login" in request)) {
-            throw Error("'login' is undefined");
-        } else if (!("pass" in request)) {
-            throw Error("'pass' is undefined");
+            res.status(400).send(missingArgs("login"));
+            return
+        } else if (!("password" in request)) {
+            res.status(400).send(missingArgs("password"));
+            return
         }
         const select = await surrealDB.query({
-            query: `SELECT * FROM person WHERE login = '${request?.login}'`,
-            table: "person",
+            query: `SELECT * FROM users WHERE login = '${request?.login}'`,
+            table: "users",
         });
 
         const user = await select[0]?.result?.length;
         if (user > 0) {
-            throw Error("This login is already in use");
+            throw Error(errorCodes["U-03"]);
         }
-        const { login, pass } = request;
+        const { login, password } = request;
 
         // SALT
         const salt = crypto.randomBytes(8).toString("hex");
-        const hashedBuff = await scrypt(pass, salt, 82);
+        const hashedBuff = await scrypt(password, salt, 82);
         const hashedSaltPassword = `${hashedBuff.toString("hex")}.${salt}`;
 
         if (typeof hashedSaltPassword !== "string") {
-            throw Error("Something got wrong. Please, try again!");
+            throw Error(errorCodes["A-01"]);
         }
         await surrealDB.createTable({
-            table: "person",
+            table: "users",
             props: {
                 login: login,
                 pass: hashedSaltPassword,
@@ -55,11 +59,11 @@ const registerRequest = router.get(routes.REGISTER, async (req, res) => {
                 expiresIn: 864e5,
             }
         );
-        res.cookie('token', token)
+        res.cookie("token", token);
 
         res.status(200).send("ok");
     } catch (error) {
-        res.status(400).send(`${error}`);
+        res.status(400).send(error);
     }
 });
 module.exports = registerRequest;

@@ -7,6 +7,7 @@ const scrypt = promisify(crypto.scrypt);
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const { config } = require("dotenv");
+const errorCodes = require("../errorCodes");
 
 config();
 
@@ -15,8 +16,8 @@ const loginRequest = router.post(routes.LOGIN, async (req, res) => {
     try {
         const { password, login } = req.query;
         const select = surrealDB.query({
-            query: `SELECT * from person WHERE login = '${login}'`,
-            table: "person",
+            query: `SELECT * from users WHERE login = '${login}'`,
+            table: "users",
         });
         const user = await select[0]?.result[0];
         if (user && password) {
@@ -37,15 +38,15 @@ const loginRequest = router.post(routes.LOGIN, async (req, res) => {
                 );
                 res.cookie("token", token);
 
-                res.status(200).send(`Good morning, ${user.login}`);
+                res.status(200).send(true);
             } else {
-                res.status(400).send("Invalid password");
+                res.status(400).send(errorCodes['U-01']);
             }
         } else {
-            res.status(400).send("password or login doesn't correct");
+            res.status(400).send(errorCodes['U-02']);
         }
     } catch (error) {
-        res.status(500).send("Something got wrong! Please, try again!");
+        res.status(500).send(errorCodes['A-01']);
     }
 });
 module.exports = loginRequest;

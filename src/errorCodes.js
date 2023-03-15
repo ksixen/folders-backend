@@ -1,11 +1,14 @@
-module.exports = {
+
+const errorCodes = {
     'A-01': {
         err: "Something got wrong! Please, try again!",
         code: 'A-01'
     },
-    'A-02': {
-        err: "Missing arguments: {args}",
-        code: 'A-02'
+    'A-02': (args = '') => {
+        return {
+            err: `Missing arguments: ${args}`,
+            code: 'A-02'
+        }
     },
 
     
@@ -22,3 +25,4 @@ module.exports = {
         code: 'U-03'
     },
 }
+module.exports = errorCodes

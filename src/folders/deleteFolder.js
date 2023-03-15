@@ -1,9 +1,10 @@
 const express = require("express");
 const surrealDB = require("../surreal");
 const routes = require("../routes.js");
+const authMiddleware = require("../funcs/authMiddleware");
 const router = express.Router();
 
-const deleteFolderRequest = router.delete(routes.DELETE_FOLDERS, async (req, res) => {
+const deleteFolderRequest = router.delete(routes.DELETE_FOLDERS, authMiddleware, async (req, res) => {
     try {
         const id = String(req.query.id);
         await surrealDB
