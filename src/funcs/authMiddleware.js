@@ -1,4 +1,4 @@
-const { verify } = require("jsonwebtoken");
+const { verify, sign } = require("jsonwebtoken");
 const { config } = require("dotenv");
 
 config();
@@ -11,10 +11,23 @@ const authMiddleware = async (req, res, next) => {
     if (!authorization) {
         res.status(401).send('Not authorized');
         return;
-    }
+    }   
+
 
     try {
-        verify(authorization, SECRET);
+        const decoded = verify(authorization, SECRET);
+        const expiryDate = new Date();
+        
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
+        sign(
+            {
+                login: decoded?.login,
+            },
+            SECRET,
+            {
+                expiresIn: +expiryDate,
+            }
+        );
         return next();
     } catch (e) {
         console.log(e)

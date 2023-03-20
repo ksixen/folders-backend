@@ -7,6 +7,10 @@ const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const staticServe = require("serve-static");
 const { config } = require("dotenv");
+const corsOptions = {
+    origin: 'http://localhost:1500',
+    credentials:  true
+  }
 
 const constants = require("./constants.js");
 
@@ -22,7 +26,6 @@ const surrealDB = require("./surreal.js");
 // configuration express.js - start region
 config();
 
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(staticServe("_domain", { index: ["index.html", "index.html"] }));
@@ -30,6 +33,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("trust proxy", true);
 app.set("trust proxy", "loopback");
+app.use(cors(corsOptions));
 // configuration express.js - end region
 
 // ROUTES start region

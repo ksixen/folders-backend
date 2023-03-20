@@ -26,8 +26,8 @@ class surrealDB {
 
   static async createTable({ table, props }) {
     // Create a new person with a random id
-    await db.create(table, props);
-
+    const res = await db.create(table, props);
+    return res
     // await db.select(table);
   }
 

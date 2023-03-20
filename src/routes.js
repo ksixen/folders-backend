@@ -4,7 +4,7 @@ const ROUTERS_LIST = {
     REGISTER: '/register',
     
     // folders
-    DELETE_FOLDERS: '/folder',
+    DELETE_FOLDERS: '/deleteFolder',
     GET_FOLDERS: '/getFolders',
     ADD_FOLDER: '/addFolder',
     

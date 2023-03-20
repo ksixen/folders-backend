@@ -9,12 +9,11 @@ const usersRequest = router.get(
     async (req, res) => {
         try {
             const select = await surrealDB.query({
-                query: `SELECT * from users`,
+                query: `SELECT *, NONE AS pass FROM users`,
                 table: "users",
             });
             res.status(200).send(select[0]?.result);
         } catch (error) {
-            console.log(error)
             res.status(400).send("error");
         }
     }

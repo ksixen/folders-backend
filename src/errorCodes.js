@@ -6,7 +6,13 @@ const errorCodes = {
     },
     'A-02': (args = '') => {
         return {
-            err: `Missing arguments: ${args}`,
+            err: `Missing parameter: ${args}`,
+            code: 'A-02'
+        }
+    },
+    'A-03': (args = '') => {
+        return {
+            err: `Invalid parameter: ${args}`,
             code: 'A-02'
         }
     },

@@ -13,15 +13,22 @@ config();
 
 const { SECRET } = process.env;
 
-const registerRequest = router.get(routes.REGISTER, async (req, res) => {
+const registerRequest = router.post(routes.REGISTER, async (req, res) => {
     try {
         const request = req.body;
         const missingArgs = errorCodes["A-02"]
+        const invalidArgs = errorCodes["A-03"]
         if (!("login" in request)) {
             res.status(400).send(missingArgs("login"));
             return
         } else if (!("password" in request)) {
             res.status(400).send(missingArgs("password"));
+            return
+        } else if (request?.password?.length < 3 || request?.password?.length > 38) {
+            res.status(400).send(invalidArgs("password"));
+            return
+        } else if (request?.login?.length < 3 || request?.login?.length > 38) {
+            res.status(400).send(invalidArgs("login"));
             return
         }
         const select = await surrealDB.query({
@@ -31,7 +38,8 @@ const registerRequest = router.get(routes.REGISTER, async (req, res) => {
 
         const user = await select[0]?.result?.length;
         if (user > 0) {
-            throw Error(errorCodes["U-03"]);
+            res.status(400).send(errorCodes["U-03"]);
+            return
         }
         const { login, password } = request;
 
@@ -50,19 +58,26 @@ const registerRequest = router.get(routes.REGISTER, async (req, res) => {
                 pass: hashedSaltPassword,
             },
         });
+        const expiryDate = new Date();
+        expiryDate.setMonth(expiryDate.getMonth() + 1);
         const token = jwt.sign(
             {
                 login,
             },
             SECRET,
             {
-                expiresIn: 864e5,
+                expiresIn: +expiryDate,
             }
         );
-        res.cookie("token", token);
+        res.cookie("token", token, {
+            expires: expiryDate
+        });
 
-        res.status(200).send("ok");
+        res.status(200).send({
+            response: true
+        });
     } catch (error) {
+        console.log(error)
         res.status(400).send(error);
     }
 });
