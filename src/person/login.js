@@ -14,9 +14,9 @@ config();
 const { SECRET } = process.env;
 const loginRequest = router.post(routes.LOGIN, async (req, res) => {
     try {
-        const { password, login } = req.query;
-        const select = surrealDB.query({
-            query: `SELECT * from users WHERE login = '${login}'`,
+        const { password, login } = req.body;
+        const select = await surrealDB.query({
+            query: `SELECT * from users WHERE login = "${login}"`,
             table: "users",
         });
         const user = await select[0]?.result[0];
@@ -24,8 +24,7 @@ const loginRequest = router.post(routes.LOGIN, async (req, res) => {
             const [hashed, salt] = user.pass.split(".");
             const hashedBuff = await scrypt(password, salt, 82);
 
-            const isValid = hashed === hashedBuff.toString();
-
+            const isValid = hashed === hashedBuff.toString("hex");
             if (isValid) {
                 const token = jwt.sign(
                     {
